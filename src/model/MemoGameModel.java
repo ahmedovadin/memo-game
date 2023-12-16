@@ -3,7 +3,7 @@ package model;
 import java.util.Random;
 
 public class MemoGameModel {
-    int[][] board;
+    private int[][] board;
 
     private int count;
     private int randomNumber;
@@ -19,7 +19,7 @@ public class MemoGameModel {
     private int x2;
     private int y2;
 
-    String[][] hiddenBoard;
+    private String[][] hiddenBoard;
     private final RandomNumber random = new RandomNumber();
 
     public void initializeSize(int[] size){
@@ -33,7 +33,7 @@ public class MemoGameModel {
         initializeHiddenBoard();
     }
 
-    public void initializeBoard(){
+    private void initializeBoard(){
         board = new int[boardHeight][boardWidth];
 
         for(int i=0; i<board.length; i++){
@@ -45,7 +45,7 @@ public class MemoGameModel {
         }
     }
 
-    public void initializeHiddenBoard(){
+    private void initializeHiddenBoard(){
         hiddenBoard = new String[boardHeight][boardWidth];
         for(int i=0; i<board.length; i++){
             for(int j=0; j<board[i].length; j++){
@@ -89,7 +89,7 @@ public class MemoGameModel {
         hiddenBoard[x2][y2] = String.valueOf(board[x2][y2]);
     }
 
-    public void hideCards(){
+    private void hideCards(){
         hiddenBoard[x1][y1] = "x";
         hiddenBoard[x2][y2] = "x";
     }
@@ -109,10 +109,14 @@ public class MemoGameModel {
     public void checkCoordinates(){
         if(areCardsMatch()){
             setClosedCards(getClosedCards()-2);
-            attempts++;
+            setAttempts(getAttempts()+1);
         } else {
             hideCards();
         }
+    }
+
+    private void setAttempts(int attempts) {
+        this.attempts = attempts;
     }
 
     public int getAttempts() {

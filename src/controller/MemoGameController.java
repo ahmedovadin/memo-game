@@ -6,68 +6,139 @@ import view.MemoGameView;
 public class MemoGameController {
     private final MemoGameModel model;
     private final MemoGameView view;
+    private final int[] size = new int[2];
 
     public MemoGameController(MemoGameModel model, MemoGameView view){
        this.model = model;
        this.view = view;
-   }
-    public void start(){
-        int[] size = getUserBoardSize();
-        model.initializeSize(size);
+    }
 
-        if(!model.validateBoardSize()){
-            view.displayErrorMessage();
+    private int getUserInputFromView(String message){
+        return view.receiveUserInput(message);
+    }
+
+    private void getUserBoardSizeFromView(){
+        size[0] = getUserInputFromView("Enter board width: "); // board width
+        size[1] = getUserInputFromView("Enter board height: "); // board height
+    }
+
+    private void serBoardSize(){
+        model.initializeSize(size);
+    }
+
+    private boolean isValidBoardSize(){
+        return model.validateBoardSize();
+    }
+
+    private void createBoard(){
+        model.createBoard();
+    }
+
+    private void shuffleArray(){
+        model.shuffleArray();
+    }
+
+    private void updateViewError(){
+        view.displayErrorMessage();
+    }
+    private void updateView(String message){
+        view.displayMessage(message);
+    }
+
+    private void updateViewArray(String [][] array){
+        view.printArray(array);
+    }
+
+    private String[][] getHiddenBoard(){
+        return model.getHiddenBoard();
+    }
+
+    private int getBoardWidth(){
+        return model.getBoardWidth();
+    }
+
+    private int getBoardHeight(){
+        return model.getBoardHeight();
+    }
+
+    private int getClosedCards() {
+       return model.getClosedCards();
+    }
+
+    private int getInputFromView(){
+        return view.getInput();
+    }
+
+    private void setCoordinates(int x1, int y1, int x2, int y2){
+        model.setCoordinates(x1, y1, x2, y2);
+    }
+
+    private int getAttempts(){
+        return model.getBoardWidth();
+    }
+
+    private void openCards(){
+        model.openCards();
+    }
+
+    private void checkCoordinates(){
+        model.checkCoordinates();
+    }
+
+    private boolean areCardsMatch(){
+        return model.areCardsMatch();
+    }
+    public void start(){
+        getUserBoardSizeFromView();
+        serBoardSize();
+
+        if(!isValidBoardSize()){
+            updateViewError();
             return;
         }
 
-        model.createBoard();
-        model.shuffleArray();
-        view.printArray(model.getHiddenBoard());
+        createBoard();
+        shuffleArray();
+
+        updateViewArray(getHiddenBoard());
 
 
-        view.displayMessage("Width: " + model.getBoardWidth() + ", Height: " + model.getBoardHeight());
-        view.displayMessage("Closed cards: " + model.getClosedCards());
+        updateView("Width: " + getBoardWidth() + ", Height: " + getBoardHeight());
+        updateView("Closed cards: " + getClosedCards());
 
         getUserCoordinates();
     }
 
-    public int[] getUserBoardSize(){
-        int[] size = new int[2];
-
-        size[0] = view.receiveUserInput("Enter board width: "); // board width
-        size[1] = view.receiveUserInput("Enter board height: "); // board height
-
-        return size;
-    }
 
     private void getUserCoordinates(){
         do {
-            view.displayMessage("Enter the first and second card coordinates like (0 0 1 1): ");
+            updateView("Enter the first and second card coordinates like (0 0 1 1): ");
 
-            int x1 = view.getInput();
-            int y1 = view.getInput();
+            int x1 = getInputFromView();
+            int y1 = getInputFromView();
 
-            int x2 = view.getInput();
-            int y2 = view.getInput();
+            int x2 = getInputFromView();
+            int y2 = getInputFromView();
 
 
-            model.setCoordinates(x1, y1, x2, y2);
+            setCoordinates(x1, y1, x2, y2);
 
             if(model.areCardsOpened()){
-                view.displayMessage("Cards are open, choose others");
+                updateView("Cards are open, choose others");
                 continue;
             }
-            model.openCards();
-            view.printArray(model.getHiddenBoard());
+            openCards();
+            updateViewArray(getHiddenBoard());
 
-            model.checkCoordinates();
+            checkCoordinates();
 
-            view.displayMessage(model.areCardsMatch() ? "Pairs matched" : "Pairs did not match");
-            view.printArray(model.getHiddenBoard());
+            updateView(areCardsMatch() ? "Pairs matched" : "Pairs did not match");
+            updateViewArray(getHiddenBoard());
 
-            view.displayMessage("Attempts: " + model.getAttempts());
-        } while( model.getClosedCards() > 0);
+            updateView("Attempts: " + getAttempts());
 
-        view.displayMessage("You win, game ended.");
+        } while( getClosedCards() > 0);
+
+        updateView("You win, game ended.");
     }
 }
